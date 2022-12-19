@@ -1,7 +1,15 @@
 import { dirname, importx } from "@discordx/importer";
-import type { Interaction, Message } from "discord.js";
+import bodyParser from "body-parser";
+import { ActivityType, Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
+import * as dotenv from "dotenv";
+import express from "express";
+import "reflect-metadata";
+
+import webhookRouter from "./api/webhook.js";
+
+dotenv.config();
 
 export const bot = new Client({
   // To use only guild command
@@ -14,6 +22,7 @@ export const bot = new Client({
     IntentsBitField.Flags.GuildMessages,
     IntentsBitField.Flags.GuildMessageReactions,
     IntentsBitField.Flags.GuildVoiceStates,
+    IntentsBitField.Flags.MessageContent,
   ],
 
   // Debug logs are disabled in silent mode
@@ -27,10 +36,15 @@ export const bot = new Client({
 
 bot.once("ready", async () => {
   // Make sure all guilds are cached
-  // await bot.guilds.fetch();
+  await bot.guilds.fetch();
 
   // Synchronize applications commands with Discord
   await bot.initApplicationCommands();
+
+  bot.user?.setActivity({
+    type: ActivityType.Playing,
+    name: 'with some Python files'
+  });
 
   // To clear all guild commands, uncomment this line,
   // This is useful when moving from guild commands to global commands
@@ -63,6 +77,16 @@ async function run() {
   if (!process.env.BOT_TOKEN) {
     throw Error("Could not find BOT_TOKEN in your environment");
   }
+
+  const server = express();
+  server.use(bodyParser.json());
+
+  server.use('/api', webhookRouter);
+
+  const port = process.env.PORT ?? 3000;
+  server.listen(port, () => {
+    console.log(`Express server running on port ${port}.`);
+  });
 
   // Log in with your bot token
   await bot.login(process.env.BOT_TOKEN);

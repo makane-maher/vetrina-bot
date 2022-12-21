@@ -16,6 +16,12 @@ function parseWebhook(body: any) {
     return null;
 }
 
+webhookRouter.get('/status', (req, res) => {
+    return res.json({
+        message: 'A-Okay bowass!'
+    });
+});
+
 webhookRouter.post('/bitbucket', (req, res) => {
     if (!WEBHOOK_URL) {
         return;

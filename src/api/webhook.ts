@@ -3,6 +3,7 @@ import { bot } from '../main.js';
 import { CommentWebhook, PullRequestWebhook } from '../types/webhook.type.js';
 import { generateEmbed } from '../common/generate-embeds.js';
 import * as dotenv from "dotenv";
+import axios from 'axios';
 
 dotenv.config();
 
@@ -47,16 +48,14 @@ webhookRouter.post('/bitbucket', (req, res) => {
         embeds: [embed]
     };
 
-    fetch(WEBHOOK_URL, {
+    axios.post(WEBHOOK_URL, body, {
         headers: {
             'Content-Type': 'application/json',
         },
-        method: 'POST',
-        body: JSON.stringify(body),
-    }).then(async (response) => {
+    }).then(response => {
         let data;
         try {
-            data = await response.json();
+            data = response.data;
         } catch (e) {
             data = response.status;
         }

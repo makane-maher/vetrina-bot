@@ -15,6 +15,7 @@
   "dependencies": {
     "@discordx/importer": "^1.1.10",
     "@discordx/pagination": "^3.3.1",
+    "axios": "^1.2.1",
     "body-parser": "^1.20.1",
     "discord.js": "^14.6.0",
     "discordx": "^11.4.0",

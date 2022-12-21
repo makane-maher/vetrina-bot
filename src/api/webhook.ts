@@ -2,6 +2,9 @@ import Router from 'express';
 import { bot } from '../main.js';
 import { CommentWebhook, PullRequestWebhook } from '../types/webhook.type.js';
 import { generateEmbed } from '../common/generate-embeds.js';
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const webhookRouter = Router();
 const WEBHOOK_URL = process.env.BITBUCKET_WEBHOOK_URL;
@@ -24,13 +27,17 @@ webhookRouter.get('/status', (req, res) => {
 
 webhookRouter.post('/bitbucket', (req, res) => {
     if (!WEBHOOK_URL) {
-        return;
+        return res.status(400).json({
+            error: 'No Bitbucket Webhook configured.',
+        });
     }
 
     const data = parseWebhook(req.body);
 
     if (!data) {
-        return res.json();
+        return res.status(400).json({
+            error: 'Bad data',
+        });
     }
 
     const embed = generateEmbed(data);
@@ -53,10 +60,13 @@ webhookRouter.post('/bitbucket', (req, res) => {
         } catch (e) {
             data = response.status;
         }
-        console.log(`Reponse from Bitbucket:`);
+        console.log(`Reponse from Discord:`);
         console.log(data);
     });
-    res.json();
+
+    res.json({
+        message: 'Success',
+    });
 });
 
 export default webhookRouter;

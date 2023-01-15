@@ -39,14 +39,7 @@ bot.once("ready", async () => {
   await bot.guilds.fetch();
 
   // Synchronize applications commands with Discord
-  await bot.initApplicationCommands({
-    global: {
-      log: true
-    },
-    guild: {
-      log: true
-    },
-  });
+  await bot.initApplicationCommands();
 
   bot.user?.setActivity({
     type: ActivityType.Playing,

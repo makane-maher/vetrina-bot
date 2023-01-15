@@ -26,7 +26,7 @@ export const bot = new Client({
   ],
 
   // Debug logs are disabled in silent mode
-  silent: false,
+  silent: true,
 
   // Configuration for @SimpleCommand
   simpleCommand: {
@@ -39,7 +39,14 @@ bot.once("ready", async () => {
   await bot.guilds.fetch();
 
   // Synchronize applications commands with Discord
-  await bot.initApplicationCommands();
+  await bot.initApplicationCommands({
+    global: {
+      log: true
+    },
+    guild: {
+      log: true
+    },
+  });
 
   bot.user?.setActivity({
     type: ActivityType.Playing,

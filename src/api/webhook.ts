@@ -9,6 +9,7 @@ dotenv.config();
 
 const webhookRouter = Router();
 const WEBHOOK_URL = process.env.BITBUCKET_WEBHOOK_URL;
+const AVATAR_URL = process.env.BOT_AVATAR_URL;
 
 function parseWebhook(body: any) {
     if (body.comment) {
@@ -45,6 +46,7 @@ webhookRouter.post('/bitbucket', (req, res) => {
 
     const body: any = {
         username: bot.user?.username ?? '',
+        avatar_url: AVATAR_URL,
         embeds: [embed]
     };
 
@@ -53,14 +55,10 @@ webhookRouter.post('/bitbucket', (req, res) => {
             'Content-Type': 'application/json',
         },
     }).then(response => {
-        let data;
-        try {
-            data = response.data;
-        } catch (e) {
-            data = response.status;
-        }
-        console.log(`Reponse from Discord:`);
-        console.log(data);
+        console.log(`[${new Date().toISOString()}] [Bitbucket webhook event] [${embed.title}]`);
+    }).catch(err => {
+        console.log(`Webhook request failed with the following error:`);
+        console.error(err.message);
     });
 
     res.json({

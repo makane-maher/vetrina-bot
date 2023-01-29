@@ -23,6 +23,7 @@ export function generateEmbed(data: CommentWebhook | PullRequestWebhook) {
 
 function addCommentFields(embed: EmbedData, data: CommentWebhook) {
     embed.title = `${data.comment.user.display_name} ${data.comment.parent ? 'replied to a comment' : 'commented'} on PR #${data.pullrequest.id}`;
+    embed.url = data.comment.links.html.href;
     embed.fields!.push({
         name: `${data.comment.user.display_name}:`,
         value: data.comment.content.raw!.length > 1000 ? data.comment.content.raw!.slice(0,1000) + '...' : data.comment.content.raw!,

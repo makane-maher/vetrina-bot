@@ -4,6 +4,8 @@ import { CommentWebhook, PullRequestWebhook } from '../types/webhook.type.js';
 import { generateEmbed } from '../common/generate-embeds.js';
 import * as dotenv from "dotenv";
 import axios from 'axios';
+import { ButtonBuilder } from '@discordjs/builders';
+import { ButtonStyle, ComponentType } from 'discord.js';
 
 dotenv.config();
 
@@ -43,11 +45,13 @@ webhookRouter.post('/bitbucket', (req, res) => {
     }
 
     const embed = generateEmbed(data);
+    const button = new ButtonBuilder({ type: ComponentType.Button, url: embed.url, label: 'View', style: ButtonStyle.Link });
 
     const body: any = {
         username: bot.user?.username ?? '',
         avatar_url: AVATAR_URL,
-        embeds: [embed]
+        embeds: [embed],
+        components: [button],
     };
 
     axios.post(WEBHOOK_URL, body, {

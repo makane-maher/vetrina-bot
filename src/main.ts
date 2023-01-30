@@ -11,6 +11,12 @@ import webhookRouter from "./api/webhook.js";
 
 dotenv.config();
 
+const log = console.log;
+
+console.log = function(){
+    log.apply(console, [`[${new Date().toISOString()}]`, ...arguments]);
+};
+
 export const bot = new Client({
   // To use only guild command
   // botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],

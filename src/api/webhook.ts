@@ -45,7 +45,12 @@ webhookRouter.post('/bitbucket', (req, res) => {
     }
 
     const embed = generateEmbed(data);
-    const button = new ButtonBuilder({ type: ComponentType.Button, url: embed.url, label: 'View', style: ButtonStyle.Link });
+    const button = {
+        type: ComponentType.Button,
+        url: embed.url,
+        label: 'View',
+        style: ButtonStyle.Link
+    };
 
     const body: any = {
         username: bot.user?.username ?? '',

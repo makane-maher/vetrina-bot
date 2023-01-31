@@ -1,6 +1,6 @@
 import Router from 'express';
 import { bot } from '../main.js';
-import { CommentWebhook, PullRequestWebhook } from '../types/webhook.type.js';
+import { BitbucketEventType, CommentWebhook, PullRequestWebhook } from '../types/webhook.type.js';
 import { generateEmbed } from '../common/generate-embeds.js';
 import * as dotenv from "dotenv";
 import axios from 'axios';
@@ -10,16 +10,6 @@ dotenv.config();
 const webhookRouter = Router();
 const WEBHOOK_URL = process.env.BITBUCKET_WEBHOOK_URL;
 const AVATAR_URL = process.env.BOT_AVATAR_URL;
-
-function parseWebhook(body: any) {
-    if (body.comment) {
-        return body as CommentWebhook;
-    }
-    if (body.pullrequest) {
-        return body as PullRequestWebhook;
-    }
-    return null;
-}
 
 webhookRouter.get('/status', (req, res) => {
     return res.json({
@@ -34,15 +24,13 @@ webhookRouter.post('/bitbucket', (req, res) => {
         });
     }
 
-    const data = parseWebhook(req.body);
+    const embed = generateEmbed(req.headers['x-event-key'] as BitbucketEventType, req.body);
 
-    if (!data) {
+    if (!embed) {
         return res.status(400).json({
-            error: 'Bad data',
+            message: 'Unsupported event type.',
         });
     }
-
-    const embed = generateEmbed(data);
 
     const body: any = {
         username: bot.user?.username ?? '',
@@ -55,7 +43,7 @@ webhookRouter.post('/bitbucket', (req, res) => {
             'Content-Type': 'application/json',
         },
     }).then(response => {
-        console.log(`[${new Date().toISOString()}] [Bitbucket webhook event] [${embed.title}]`);
+        console.log(`[Bitbucket webhook event] [${embed.title}]`);
     }).catch(err => {
         console.log(`Webhook request failed with the following error:`);
         console.error(err.message);

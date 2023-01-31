@@ -1,3 +1,15 @@
+export enum BitbucketEventType {
+    COMMIT_NEW = 'repo:push',
+    PR_NEW = 'pullrequest:created',
+    PR_UPDATE = 'pullrequest:updated',
+    PR_CHANGE_REQUEST = 'pullrequest:changes_request_created',
+    PR_APPROVED = 'pullrequest:approved',
+    PR_REMOVED = 'pullrequest:unapproved',
+    PR_MERGED = 'pullrequest:fulfilled',
+    PR_DECLINED = 'pullrequest:rejected',
+    COMMENT_NEW = 'pullrequest:comment_created',
+}
+
 export enum PropertyType {
     BRANCH = "branch",
     BUILD = "build",

@@ -27,7 +27,8 @@ export class Announcement {
             required: true,
         })
         message: string,
-        interaction: CommandInteraction
+        interaction: CommandInteraction,
+        guardData: { go: boolean, message?: string },
     ) {
         await interaction.deferReply();
 
@@ -35,6 +36,11 @@ export class Announcement {
 
         if (!announcementChannelId) {
             return await interaction.followUp({ content: 'No announcement channel ID set in `.env`.' });
+        }
+
+        if (!guardData.go) {
+            await interaction.followUp({ content: guardData.message });
+            return;
         }
 
         const channel = interaction.guild?.channels.cache.find((channel) => channel.id === announcementChannelId);

@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType, CommandInteraction, EmbedBuilder } from "discord.js";
-import { Client, Discord, Slash, SlashOption } from "discordx";
+import { Client, Discord, Guard, Guild, Slash, SlashOption } from "discordx";
 import { constants } from "../common/constants.js";
+import { memberGuard } from "../guards/member.guard.js";
 
 @Discord()
 export class Announcement {
@@ -10,6 +11,7 @@ export class Announcement {
         name: 'announcement',
         description: 'Make an announcement in the #announcement channel for you.',
     })
+    @Guard(memberGuard)
     async announce(
         @SlashOption({
             name: 'title',

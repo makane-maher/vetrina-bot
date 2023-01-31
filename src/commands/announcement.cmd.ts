@@ -66,7 +66,7 @@ export class Announcement {
             },
         });
 
-        await channel.send({ embeds: [embed] });
+        await channel.send({ content: '@everyone', embeds: [embed], allowedMentions: { parse: ["everyone"] } });
 
         const successMessage = await interaction.followUp({ content: 'Sent successfully!' });
         const thanksMessage = await interaction.followUp({ content: 'Thank you for using Vetrina Bot Services (VBS).' });

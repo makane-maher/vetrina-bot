@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Client, Discord, Slash, SlashOption } from "discordx";
-import { constants } from "../common/constants";
+import { constants } from "../common/constants.js";
 
 @Discord()
 export class Announcement {

@@ -1,7 +1,8 @@
-import { ArgsOf, GuardFunction } from "discordx";
+import { CommandInteraction } from "discord.js";
+import { GuardFunction } from "discordx";
 
-export const memberGuard: GuardFunction<ArgsOf<"interactionCreate">> = async ([message], client, next, guardData) => {
-    if (message.user.id != process.env.PHILIP) {
+export const memberGuard: GuardFunction<CommandInteraction> = async (interaction, client, next, guardData) => {
+    if (interaction.user.id != process.env.PHILIP) {
         guardData.go = false;
         guardData.message = '[**403**] Permission __**DENIED**__';
     } else {

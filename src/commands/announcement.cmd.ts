@@ -28,10 +28,9 @@ export class Announcement {
         })
         message: string,
         interaction: CommandInteraction,
+        client: Client,
         guardData: { go: boolean, message?: string },
     ) {
-        await interaction.deferReply();
-
         const announcementChannelId = process.env.ANNOUNCEMENT_CHANNEL;
 
         if (!announcementChannelId) {
@@ -39,14 +38,18 @@ export class Announcement {
         }
 
         if (!guardData.go) {
-            await interaction.followUp({ content: guardData.message });
+            try {
+                await interaction.followUp({ content: guardData.message });
+            } catch (e) {
+                await interaction.followUp({ content: 'Looks like you don\'t have permission, boss.' });
+            }
             return;
         }
 
         const channel = interaction.guild?.channels.cache.find((channel) => channel.id === announcementChannelId);
 
         if (!channel?.isTextBased()) {
-            await interaction.followUp({ content: 'Looks like I have the wrong channel ID in my `.env`.' });
+            await interaction.followUp({ content: 'Couldn\'t find the announcement channel man..' });
             return;
         }
 
@@ -59,7 +62,7 @@ export class Announcement {
                 url: constants.ANNOUNCEMENT_BANNER_IMAGE_URL,
             },
             footer: {
-                text: `By ${interaction.user.toString()}`,
+                text: `By ${interaction.user.username}`,
             },
         });
 

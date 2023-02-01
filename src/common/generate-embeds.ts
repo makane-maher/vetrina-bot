@@ -4,7 +4,7 @@ import { constants } from "./constants.js";
 
 type BitbucketEvent = PullRequestWebhook | CommentWebhook;
 
-export function generateEmbed(eventType: BitbucketEventType, data: BitbucketEvent) {
+export async function generateEmbed(eventType: BitbucketEventType, data: BitbucketEvent) {
 
     const embed: EmbedData = {
         color: 477094,
@@ -67,7 +67,7 @@ export function generateEmbed(eventType: BitbucketEventType, data: BitbucketEven
     embed.url = embed.url ?? data.pullrequest.links.html.href;
 
     if (eventType === BitbucketEventType.COMMENT_NEW) {
-        addCommentFields(embed, data as CommentWebhook);
+        await addCommentFields(embed, data as CommentWebhook);
     } else {
         addPRFields(embed, data);
     }
@@ -75,10 +75,40 @@ export function generateEmbed(eventType: BitbucketEventType, data: BitbucketEven
     return embed;
 }
 
-function addCommentFields(embed: EmbedData, data: CommentWebhook) {
+async function addCommentFields(embed: EmbedData, data: CommentWebhook) {
+    const matches = [...(data.comment.content.raw?.matchAll(/@\{(?<user>\w+)\}/g) ?? [])];
+
+    const ids = [];
+    for (const user of matches) {
+        ids.push({
+            replace: user[1],
+            with: null,
+        });
+    }
+
+    const result = await Promise.allSettled(ids.map(id => fetch(`https://api.bitbucket.org/2.0/users/${id.replace}`)));
+
+    for (let i = 0; i < result.length; i++) {
+        const found = result[i];
+        if (found.status === 'fulfilled') {
+            try {
+                var user = await found.value.json();
+            } catch (e) {
+                continue;
+            }
+            ids[i].with = user?.display_name;
+        }
+    }
+
+    let message = data.comment.content.raw ?? '';
+
+    for (const id of ids) {
+        message = message?.replaceAll(`@{${id.replace}}`, `**@${id.with ?? id.replace}**`);
+    }
+
     embed.fields!.push({
         name: `${data.comment.user.display_name}:`,
-        value: data.comment.content.raw!.length > 1000 ? data.comment.content.raw!.slice(0,1000) + '...' : data.comment.content.raw!,
+        value: message?.length > 1000 ? message.slice(0,1000) + '...' : message,
     });
     
 }

@@ -17,14 +17,14 @@ webhookRouter.get('/status', (req, res) => {
     });
 });
 
-webhookRouter.post('/bitbucket', (req, res) => {
+webhookRouter.post('/bitbucket', async (req, res) => {
     if (!WEBHOOK_URL) {
         return res.status(400).json({
             error: 'No Bitbucket Webhook configured.',
         });
     }
 
-    const embed = generateEmbed(req.headers['x-event-key'] as BitbucketEventType, req.body);
+    const embed = await generateEmbed(req.headers['x-event-key'] as BitbucketEventType, req.body);
 
     if (!embed) {
         return res.status(400).json({

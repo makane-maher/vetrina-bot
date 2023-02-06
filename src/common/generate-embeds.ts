@@ -1,6 +1,7 @@
 import { AttachmentBuilder, Colors, EmbedData } from "discord.js";
 import { BitbucketEventType, CommentWebhook, PullRequestStatus, PullRequestWebhook } from "../types/webhook.type.js";
 import { constants } from "./constants.js";
+import axios from "axios";
 
 type BitbucketEvent = PullRequestWebhook | CommentWebhook;
 
@@ -86,16 +87,12 @@ async function addCommentFields(embed: EmbedData, data: CommentWebhook) {
         });
     }
 
-    const result = await Promise.allSettled(ids.map(id => fetch(`https://api.bitbucket.org/2.0/users/${id.replace}`)));
+    const result = await Promise.allSettled(ids.map(id => axios.get(`https://api.bitbucket.org/2.0/users/${id.replace}`)));
 
     for (let i = 0; i < result.length; i++) {
         const found = result[i];
         if (found.status === 'fulfilled') {
-            try {
-                var user = await found.value.json();
-            } catch (e) {
-                continue;
-            }
+            var user = await found.value.data;
             ids[i].with = user?.display_name;
         }
     }

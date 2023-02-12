@@ -14,7 +14,9 @@
 
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+
+    "resolveJsonModule": true
   },
   "exclude": ["build", "node_modules"]
 }

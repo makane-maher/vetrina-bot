@@ -35,6 +35,9 @@ webhookRouter.post('/bitbucket', async (req, res) => {
     const body: any = {
         username: bot.user?.username ?? '',
         avatar_url: AVATAR_URL,
+        allowed_mentions: {
+            "parse": ["everyone"],
+        },
         embeds: [embed]
     };
 
@@ -46,7 +49,7 @@ webhookRouter.post('/bitbucket', async (req, res) => {
         console.log(`[Bitbucket webhook event] [${embed.title}]`);
     }).catch(err => {
         console.log(`Webhook request failed with the following error:`);
-        console.error(err.message);
+        console.error(err);
     });
 
     res.json({

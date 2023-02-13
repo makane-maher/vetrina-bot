@@ -1,21 +1,24 @@
-import { dirname, importx } from "@discordx/importer";
-import bodyParser from "body-parser";
-import { ActivityType, Interaction, Message } from "discord.js";
-import { IntentsBitField } from "discord.js";
-import { Client } from "discordx";
-import * as dotenv from "dotenv";
-import express from "express";
-import "reflect-metadata";
+import { dirname, importx } from '@discordx/importer';
+import bodyParser from 'body-parser';
+import { ActivityType, Interaction, Message } from 'discord.js';
+import { IntentsBitField } from 'discord.js';
+import { Client, MetadataStorage } from 'discordx';
+import * as dotenv from 'dotenv';
+import express from 'express';
+import 'reflect-metadata';
 
-import webhookRouter from "./api/webhook.js";
+import webhookRouter from './api/webhook.js';
+import { YTDLPlayerPlugin } from '@discordx/plugin-ytdl-player';
 
 dotenv.config();
 
 const log = console.log;
 
-console.log = function(){
-    log.apply(console, [`[${new Date().toISOString()}]`, ...arguments]);
+console.log = function () {
+  log.apply(console, [`[${new Date().toISOString()}]`, ...arguments]);
 };
+
+const ytdlPlugin = new YTDLPlayerPlugin({ metadata: MetadataStorage.instance });
 
 export const bot = new Client({
   // To use only guild command
@@ -36,11 +39,13 @@ export const bot = new Client({
 
   // Configuration for @SimpleCommand
   simpleCommand: {
-    prefix: "!",
+    prefix: '!',
   },
+
+  plugins: [ytdlPlugin],
 });
 
-bot.once("ready", async () => {
+bot.once('ready', async () => {
   // Make sure all guilds are cached
   await bot.guilds.fetch();
 
@@ -49,7 +54,7 @@ bot.once("ready", async () => {
 
   bot.user?.setActivity({
     type: ActivityType.Playing,
-    name: 'with some Python files'
+    name: 'with some Python files',
   });
 
   // To clear all guild commands, uncomment this line,
@@ -60,14 +65,14 @@ bot.once("ready", async () => {
   //    ...bot.guilds.cache.map((g) => g.id)
   //  );
 
-  console.log("Bot started");
+  console.log('Bot started');
 });
 
-bot.on("interactionCreate", (interaction: Interaction) => {
+bot.on('interactionCreate', (interaction: Interaction) => {
   bot.executeInteraction(interaction);
 });
 
-bot.on("messageCreate", (message: Message) => {
+bot.on('messageCreate', (message: Message) => {
   bot.executeCommand(message);
 });
 
@@ -81,7 +86,7 @@ async function run() {
 
   // Let's start the bot
   if (!process.env.BOT_TOKEN) {
-    throw Error("Could not find BOT_TOKEN in your environment");
+    throw Error('Could not find BOT_TOKEN in your environment');
   }
 
   const server = express();
